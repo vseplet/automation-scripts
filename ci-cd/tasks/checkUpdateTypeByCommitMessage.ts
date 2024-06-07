@@ -2,12 +2,16 @@ import core from "https://deno.land/x/shibui@v19/core/mod.ts";
 import { TaskBuilder } from "https://deno.land/x/shibui@v19/core/entities/TaskBuilder.ts";
 import { ContextPot } from "https://deno.land/x/shibui@v19/core/pots/mod.ts";
 import { sh } from "https://deno.land/x/shelly@v0.1.1/mod.ts";
+import { IPot } from "https://deno.land/x/shibui@v19/core/types.ts";
 
 export const checkUpdateTypeByCommitMessage = <
   CTX extends ContextPot<{
     updateType: string;
   }>,
->(contextPot: new () => CTX, nextTask?: TaskBuilder<CTX>) =>
+>(
+  contextPot: new () => CTX,
+  nextTask?: TaskBuilder<CTX, IPot, IPot, IPot, IPot>,
+) =>
   core.task(contextPot)
     .name("checkUpdateTypeByCommitMessage")
     .do(async ({ pots, log, next, finish }) => {
