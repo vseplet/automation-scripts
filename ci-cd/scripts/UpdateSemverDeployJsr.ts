@@ -9,9 +9,9 @@ import {
 import { sh } from "https://deno.land/x/shelly@v0.1.1/mod.ts";
 import { walk } from "jsr:@std/fs@0.224.0";
 // HELPERS
-import { incrementSemver } from "../helpers/incrementSemver.ts";
+import { incrementSemver } from "../helpers/mod.ts";
 // SHARED TASKS
-import { checkUpdateTypeByCommitMessage } from "../tasks/checkUpdateTypeByCommitMessage.ts";
+import { checkUpdateTypeByCommitMessage } from "../tasks/mod.ts";
 
 class UpdateVersionContext extends ContextPot<{
   updateType: string;
