@@ -1,6 +1,6 @@
-import core from "https://deno.land/x/shibui@v18/core/mod.ts";
-import { TaskBuilder } from "https://deno.land/x/shibui@v18/core/entities/TaskBuilder.ts";
-import { ContextPot } from "https://deno.land/x/shibui@v18/core/pots/mod.ts";
+import core from "https://deno.land/x/shibui@v19/core/mod.ts";
+import { TaskBuilder } from "https://deno.land/x/shibui@v19/core/entities/TaskBuilder.ts";
+import { ContextPot } from "https://deno.land/x/shibui@v19/core/pots/mod.ts";
 import { sh } from "https://deno.land/x/shelly@v0.1.1/mod.ts";
 
 export const checkUpdateTypeByCommitMessage = <
@@ -14,7 +14,6 @@ export const checkUpdateTypeByCommitMessage = <
       const ctx = pots[0].data;
 
       const lastCommitText = (await sh("git log -1 --pretty=%B")).stdout;
-
       if (lastCommitText.indexOf("[major]") != -1) {
         ctx.updateType = "major";
       } else if (lastCommitText.indexOf("[minor]") != -1) {
