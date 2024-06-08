@@ -1,17 +1,11 @@
 // deno-lint-ignore-file
-import core from "https://deno.land/x/shibui@v20/core/mod.ts";
-// TYPES
-import {
-  ContextPot,
-  CoreStartPot,
-} from "https://deno.land/x/shibui@v20/core/pots/mod.ts";
 // UTILS
-import { sh } from "https://deno.land/x/shelly@v0.1.1/mod.ts";
 import { walk } from "jsr:@std/fs@0.224.0";
 // HELPERS
-import { incrementSemver } from "../helpers/mod.ts";
+import { incrementSemver } from "../helpers/incrementSemver.ts";
 // SHARED TASKS
-import { checkUpdateTypeByCommitMessage } from "../tasks/mod.ts";
+import { checkUpdateTypeByCommitMessage } from "../tasks/checkUpdateTypeByCommitMessage.ts";
+import { ContextPot, core, CoreStartPot, sh } from "../../deps.ts";
 
 class UpdateVersionContext extends ContextPot<{
   updateType: string;
@@ -23,6 +17,7 @@ class UpdateVersionContext extends ContextPot<{
     scope: Deno.args[0],
     packageName: Deno.args[1],
     updateType: "patch",
+    oldVersion: "0.0.0",
     version: "0.0.0",
   };
 
@@ -88,17 +83,6 @@ core.api.register(
         .do(async ({ pots, log, next }) => {
           const ctx = pots[0].data;
 
-          const mdUrlPattern = new RegExp(
-            String
-              .raw`import\s+[^;]+from\s+'jsr:@${ctx.scope}\/${ctx.packageName}@[^']+';`,
-            "g",
-          );
-
-          const mdUrlReplacePattern = new RegExp(
-            String
-              .raw`(@${ctx.scope}\/${ctx.packageName}@)[^']+`,
-          );
-
           for await (
             const entry of walk(".", {
               exts: ["md"],
@@ -107,14 +91,9 @@ core.api.register(
           ) {
             if (entry.isFile) {
               const fileContent = await Deno.readTextFile(entry.path);
-              const updatedContent = fileContent.replace(
-                mdUrlPattern,
-                (match) => {
-                  return match.replace(
-                    mdUrlReplacePattern,
-                    `$1${ctx.version}`,
-                  );
-                },
+              const updatedContent = fileContent.replaceAll(
+                `${ctx.packageName}@${ctx.oldVersion}`,
+                `${ctx.packageName}@${ctx.version}`,
               );
 
               if (fileContent !== updatedContent) {
@@ -174,6 +153,8 @@ core.api.register(
               ctx.updateType,
             );
 
+            ctx.oldVersion = versions[0];
+
             newVersionsTS = `export default [ ${
               [ctx.version, ...versions].map((version) => `"${version}"`).join(
                 ", ",
@@ -189,6 +170,7 @@ core.api.register(
           );
           return next(t2, {
             version: ctx.version,
+            oldVersion: ctx.oldVersion,
           });
         });
 

@@ -1,7 +1,4 @@
-import core from "https://deno.land/x/shibui@v20/core/mod.ts";
-import { TaskBuilder } from "https://deno.land/x/shibui@v20/core/entities/TaskBuilder.ts";
-import { ContextPot } from "https://deno.land/x/shibui@v20/core/pots/mod.ts";
-import { sh } from "https://deno.land/x/shelly@v0.1.1/mod.ts";
+import { ContextPot, core, sh, TaskBuilder } from "../../deps.ts";
 
 export const checkUpdateTypeByCommitMessage = <
   CTX extends ContextPot<{
